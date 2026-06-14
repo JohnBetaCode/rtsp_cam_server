@@ -41,6 +41,19 @@ All setup and usage instructions live in [`docs/`](docs/):
 - [Getting started](docs/getting-started.md)
 - [Project context](docs/Project%20Context.md)
 - [Implementation plan](docs/implementation-plan.md)
+- [GitHub repository configuration](docs/github/github-branch-protection.md)
+- [GitHub Actions](docs/github/Github_Actions.md)
+
+## Contributing
+
+Use the same GitHub flow copied from the Rdog repository:
+
+1. Create short-lived feature branches from the protected base branch.
+2. Use commit messages like `[SUBSYSTEM] action: description`.
+3. Open a PR with the provided template and apply `type_*`, `sys_*`, and
+   `PRIORITY_*` labels.
+4. Request review and resolve all conversations before merge.
+5. Use squash or rebase merge only; merge commits stay disabled.
 
 > Status: **Step 1 of the build plan** — MediaMTX streaming engine running with a
 > verifiable demo source. Control plane, cameras, clients, tunnel, and multi-arch

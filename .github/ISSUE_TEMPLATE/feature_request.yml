@@ -1,0 +1,53 @@
+name: Feature Request
+description: Propose a new feature or improvement
+labels: ["type_feature"]
+body:
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - PRIORITY_LOW
+        - PRIORITY_MEDIUM
+        - PRIORITY_HIGH
+    validations:
+      required: true
+
+  - type: dropdown
+    id: system
+    attributes:
+      label: System
+      options:
+        - sys_streaming
+        - sys_api
+        - sys_config
+        - sys_docs
+        - sys_cicd
+        - sys_other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What problem does this solve or what need does it address?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context

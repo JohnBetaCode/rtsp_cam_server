@@ -1,0 +1,65 @@
+name: Bug Report
+description: Report a bug or unexpected behavior
+labels: ["type_bug"]
+body:
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - PRIORITY_LOW
+        - PRIORITY_MEDIUM
+        - PRIORITY_HIGH
+        - PRIORITY_SATANIC
+    validations:
+      required: true
+
+  - type: dropdown
+    id: system
+    attributes:
+      label: System
+      options:
+        - sys_streaming
+        - sys_api
+        - sys_config
+        - sys_docs
+        - sys_cicd
+        - sys_other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened? What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Start ...
+        2. Connect ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: |
+        - Host OS / device:
+        - Docker version:
+        - Branch / commit:
+        - Stream protocol:
+        - Camera type:
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or tracebacks
+      render: shell

@@ -1,0 +1,41 @@
+name: Hotfix
+description: Critical fix needed for a deployed environment
+labels: ["type_hotfix", "PRIORITY_HIGH"]
+body:
+  - type: dropdown
+    id: system
+    attributes:
+      label: Affected system
+      options:
+        - sys_streaming
+        - sys_api
+        - sys_config
+        - sys_docs
+        - sys_cicd
+        - sys_other
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: What is broken? Who or what is affected?
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Root cause, if known
+
+  - type: textarea
+    id: fix
+    attributes:
+      label: Proposed fix
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / tracebacks
+      render: shell
