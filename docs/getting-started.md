@@ -21,7 +21,9 @@ docker compose logs -f mediamtx
 ```
 
 This starts **MediaMTX** with a synthetic `demo` source (a test pattern), which
-lets you verify the whole pipeline without a real camera.
+lets you verify the whole pipeline without a real camera, plus the
+**`media_publisher`** service, which publishes every video in `media/` as its
+own always-on stream (see step 5).
 
 ## 3. Verify the demo stream
 
@@ -57,7 +59,23 @@ ffplay -rtsp_transport tcp rtsp://localhost:8554/virtualcam
 Full details — changing the clip, how it works, and a standalone no-hub script —
 are in [Virtual camera](virtual-camera.md).
 
-## 5. Use a USB camera (optional)
+## 5. Stream all videos in `media/` at once (multiple cameras)
+
+Every video file in `media/` is also published as its **own always-on stream**
+at the path `media/<filename>` — one "camera channel" per file, no per-file
+configuration:
+
+```bash
+cp my_clips/*.mp4 media/                     # add clips (gitignored)
+docker compose restart media_publisher      # rescan the folder
+
+ffplay -rtsp_transport tcp rtsp://localhost:8554/media/sample.mp4
+```
+
+Unlike `demo`/`virtualcam`, these streams run continuously whether or not
+anyone is watching. Details in [Multiple cameras](multi-camera.md).
+
+## 6. Use a USB camera (optional)
 
 If the host has a USB webcam, the hub can stream it at the **`usbcam`** path.
 Uncomment the `devices:` block in `docker-compose.yml` to pass the camera in,
@@ -71,7 +89,7 @@ ffplay -rtsp_transport tcp rtsp://localhost:8554/usbcam
 Finding the device, MJPEG cameras, permissions, and multiple cameras are covered
 in [USB camera](usb-camera.md).
 
-## 6. Consume from another machine (Tailscale)
+## 7. Consume from another machine (Tailscale)
 
 Streams reach another PC / network over a [Tailscale](https://tailscale.com) mesh
 VPN — it carries RTSP (which an HTTP tunnel can't). Install it on the hub **and**
@@ -92,7 +110,7 @@ ffplay -rtsp_transport tcp rtsp://100.x.y.z:8554/virtualcam
 Cross-network sharing between different Tailscale accounts, ACLs, and other
 gotchas are covered in [Remote access](remote-access.md).
 
-## 7. Stop
+## 8. Stop
 
 ```bash
 docker compose down

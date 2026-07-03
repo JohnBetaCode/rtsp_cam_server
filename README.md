@@ -8,9 +8,11 @@ pipelines.
 ## What works today
 
 - **MediaMTX streaming hub**, run with Docker Compose.
-- Three sources, each served over RTSP/WebRTC/HLS at once:
+- Four kinds of sources, each served over RTSP/WebRTC/HLS at once:
+  - **`media/<file>`** — **multi-camera**: every video in `media/` becomes its
+    own always-on looping stream (no hardware).
   - **`demo`** — a synthetic test pattern (no hardware).
-  - **`virtualcam`** — loops a video file from `media/`, a stand-in camera (no hardware).
+  - **`virtualcam`** — loops a single chosen video file from `media/` (no hardware).
   - **`usbcam`** — a physical USB webcam (needs a camera + device passthrough).
 - **Remote access** from another PC or network, over Tailscale.
 - A standalone virtual-camera script: [`utils/virtual_rtsp_camera.sh`](utils/virtual_rtsp_camera.sh).
@@ -32,9 +34,22 @@ Verify the synthetic **demo** stream (a test pattern, no hardware needed):
 - WebRTC: http://localhost:8889/demo
 - HLS:   http://localhost:8888/demo
 
-### Virtual camera (loop a video file)
+### Multiple cameras (one stream per file in `media/`)
 
-The hub also has a **`virtualcam`** path that loops a clip from `media/`:
+Every video dropped into `media/` is published as its own **always-on** stream
+at `media/<filename>` — no per-file config:
+
+```bash
+cp my_clips/*.mp4 media/                      # add clips (gitignored)
+docker compose up -d                          # or: docker compose restart media_publisher
+ffplay -rtsp_transport tcp rtsp://localhost:8554/media/sample.mp4
+```
+
+See [Multiple cameras](docs/multi-camera.md).
+
+### Virtual camera (loop a single video file)
+
+The hub also has a **`virtualcam`** path that loops one clip from `media/`:
 
 ```bash
 utils/virtual_rtsp_camera.sh --make-sample   # or drop your own .mp4 in media/
@@ -48,6 +63,7 @@ network, see [Remote access](docs/remote-access.md).
 ## Documentation
 
 - [Getting started](docs/getting-started.md)
+- [Multiple cameras](docs/multi-camera.md) — one always-on stream per video in `media/`
 - [Virtual camera](docs/virtual-camera.md) — hardware-free looping-video source
 - [USB camera](docs/usb-camera.md) — stream a physical USB webcam
 - [Tailscale setup](docs/tailscale-setup.md) — install, log in, and stream over a mesh VPN (step by step)

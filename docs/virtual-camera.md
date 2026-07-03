@@ -6,6 +6,10 @@ USB or RTSP camera. It behaves like a real camera to every downstream consumer.
 
 There are **two ways** to run one. Use the first for normal work.
 
+> **Want every file in `media/` streaming at once?** That's the multi-camera
+> setup — one always-on stream per file at `media/<filename>` — covered in
+> [Multiple cameras](multi-camera.md). `virtualcam` loops a *single* chosen clip.
+
 ---
 
 ## Method 1 (recommended): the hub's `virtualcam` path

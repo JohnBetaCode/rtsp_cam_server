@@ -12,11 +12,17 @@ AI/ML inspection pipelines.
 The current stack uses:
 
 - MediaMTX for streaming protocols and stream lifecycle.
-- Docker Compose for service orchestration.
-- Three sources, all defined as MediaMTX paths in `config/mediamtx.yml`:
-  `demo` (synthetic pattern), `virtualcam` (loops a local video file; also
-  available standalone via `utils/virtual_rtsp_camera.sh`), and `usbcam` (a
-  physical USB webcam via device passthrough).
+- Docker Compose for service orchestration (`mediamtx` plus the
+  `media_publisher` sidecar).
+- Four kinds of sources:
+  - `media/<filename>` — multi-camera: every video in `media/` is published as
+    its own always-on looping stream by the `media_publisher` service
+    (`scripts/publish_media.sh`), with an on-demand regex fallback path in
+    `config/mediamtx.yml`.
+  - `demo` (synthetic pattern), `virtualcam` (loops one local video file; also
+    available standalone via `utils/virtual_rtsp_camera.sh`), and `usbcam` (a
+    physical USB webcam via device passthrough) — static MediaMTX paths in
+    `config/mediamtx.yml`.
 
 ## Common Commands
 
@@ -26,6 +32,9 @@ docker compose up -d
 
 # Stop the service
 docker compose down
+
+# Rescan ./media after adding/removing clips (multi-camera streams)
+docker compose restart media_publisher
 
 # Validate Docker Compose configuration
 docker compose config
