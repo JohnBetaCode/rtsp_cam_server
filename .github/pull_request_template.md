@@ -50,9 +50,9 @@ Minor improvement, documentation, internal tooling, cleanup, or non-urgent work.
 
 **For QA / Verification**
 
-- Test mode: local Docker Compose, remote server, edge device, or CI only.
-- Streams affected: RTSP, WebRTC, HLS, demo source, USB camera, native RTSP.
-- Hardware needed: server, Jetson, Raspberry Pi, USB camera, or none.
+- Test mode: local Docker Compose, remote server, or CI only.
+- Streams affected: RTSP, WebRTC, HLS, demo source, virtualcam.
+- Hardware needed: server or none.
 
 ---
 
@@ -70,5 +70,5 @@ Minor improvement, documentation, internal tooling, cleanup, or non-urgent work.
 
 **Edge Cases**
 
-- Note edge cases such as camera disconnects, invalid RTSP URLs, network loss,
-  port conflicts, auth failures, or low-resource devices.
+- Note edge cases such as invalid or missing video clips, network loss, port
+  conflicts, or stream restarts.

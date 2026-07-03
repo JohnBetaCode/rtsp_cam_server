@@ -1,7 +1,11 @@
-# RTSP Camera Server — Docker Compose
+# RTSP Camera Server — DEPLOYMENT / SERVER stack
 #
-# Brings up the MediaMTX streaming engine.
-# Copy .env.example -> .env before running:  docker compose up -d
+# For hosting the MediaMTX streaming engine on a server or edge device.
+#
+# Run from the repository root:
+#     docker compose -f deploy/docker-compose.yml up -d
+# To use a custom .env (otherwise the defaults below apply):
+#     docker compose --env-file .env -f deploy/docker-compose.yml up -d
 
 services:
   mediamtx:
@@ -12,9 +16,9 @@ services:
     # host networking simplifies WebRTC ICE and RTSP on Linux hosts/edge devices.
     network_mode: host
     volumes:
-      - ./config/mediamtx.yml:/mediamtx.yml:ro
-      # Local video clips for the "virtualcam" path (see config/mediamtx.yml).
-      - ./media:/media:ro
+      - ../config/mediamtx.yml:/mediamtx.yml:ro
+      # Local video clips for the "virtualcam" path.
+      - ../media:/media:ro
     # USB camera passthrough for the "usbcam" path. Uncomment and adjust to the
     # device on your host. Leave commented if you have no camera — Docker refuses
     # to start when the device node is absent.
@@ -25,5 +29,5 @@ services:
       - MTX_WEBRTCADDRESS=:${WEBRTC_PORT:-8889}
       - MTX_HLSADDRESS=:${HLS_PORT:-8888}
       - MTX_APIADDRESS=:${MEDIAMTX_API_PORT:-9997}
-      # Which clip in ./media the "virtualcam" path loops (default sample.mp4).
+      # Which clip in ../media the "virtualcam" path loops (default sample.mp4).
       - VIRTUALCAM_FILE=${VIRTUALCAM_FILE:-sample.mp4}
