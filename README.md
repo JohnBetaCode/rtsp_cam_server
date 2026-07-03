@@ -50,6 +50,7 @@ network, see [Remote access](docs/remote-access.md).
 - [Getting started](docs/getting-started.md)
 - [Virtual camera](docs/virtual-camera.md) — hardware-free looping-video source
 - [USB camera](docs/usb-camera.md) — stream a physical USB webcam
+- [Tailscale setup](docs/tailscale-setup.md) — install, log in, and stream over a mesh VPN (step by step)
 - [Remote access](docs/remote-access.md) — reach streams from another PC / network (Tailscale)
 - [GitHub repository configuration](docs/github/github-branch-protection.md)
 - [GitHub Actions](docs/github/Github_Actions.md)
