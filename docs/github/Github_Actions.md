@@ -16,9 +16,8 @@ checks before requiring status checks in branch protection:
    - Run `docker compose config`.
    - Verify the demo MediaMTX service definition is valid.
 
-2. **Python quality checks**
-   - Run formatter and lint checks once the FastAPI control plane is added.
-   - Suggested tools: `ruff`, `black`, and `pytest`.
+2. **Code quality checks**
+   - Run formatter and lint checks if/when application code is added.
 
 3. **Configuration and docs checks**
    - Validate YAML files.
@@ -28,10 +27,9 @@ checks before requiring status checks in branch protection:
 
 No GitHub Actions secrets are required yet.
 
-When tunnel deployment or hosted environments are added, store runtime values as
-GitHub Actions secrets instead of committing them. Likely future examples:
+When hosted deployment is added, store runtime values as GitHub Actions secrets
+instead of committing them. Likely future examples:
 
-- `CLOUDFLARE_TUNNEL_TOKEN`
 - Deployment host credentials
 - Registry credentials
 

@@ -1,52 +1,60 @@
 # RTSP Camera Server
 
-A camera **aggregation hub** for the edge. It ingests local **USB webcams** and
-**native RTSP cameras** and re-publishes them over **RTSP, WebRTC, and HLS** so
-they can be consumed by browsers *and* by downstream applications such as
-**AI/ML visual-reasoning / inspection pipelines**.
+A camera **aggregation hub** for the edge, built on **MediaMTX**. It serves a
+video source over **RTSP, WebRTC, and HLS** at the same time, so the same stream
+can be consumed by browsers *and* by applications such as AI/ML inspection
+pipelines.
 
-Designed to be easy to host on a server or on **ARM edge devices** (NVIDIA
-Jetson, Raspberry Pi) installed in places with multiple cameras.
+## What works today
 
-## Architecture (at a glance)
-
-- **MediaMTX** — the streaming engine (ingest + multi-protocol serving).
-- **FastAPI** — the control plane: register cameras, manage streams, web UI,
-  Basic Auth. *(Frame data never flows through Python.)*
-- **cloudflared** — optional public exposure with no port forwarding.
+- **MediaMTX streaming hub**, run with Docker Compose.
+- Three sources, each served over RTSP/WebRTC/HLS at once:
+  - **`demo`** — a synthetic test pattern (no hardware).
+  - **`virtualcam`** — loops a video file from `media/`, a stand-in camera (no hardware).
+  - **`usbcam`** — a physical USB webcam (needs a camera + device passthrough).
+- **Remote access** from another PC or network, over Tailscale.
+- A standalone virtual-camera script: [`utils/virtual_rtsp_camera.sh`](utils/virtual_rtsp_camera.sh).
 
 ```
-USB / RTSP cameras ─▶ MediaMTX ─▶ RTSP (OpenCV/AI) · WebRTC (browser) · HLS
-                         ▲
-                      FastAPI (control plane + UI)
+source ─▶ MediaMTX ─▶ RTSP (apps / OpenCV / AI) · WebRTC (browser) · HLS (browser)
 ```
 
 ## Quick start
 
 ```bash
-cp .env.example .env        # adjust ports / credentials
+cp .env.example .env        # adjust ports if needed
 docker compose up -d        # starts MediaMTX
 ```
 
-Then verify the synthetic demo stream:
+Verify the synthetic **demo** stream (a test pattern, no hardware needed):
 
 - RTSP:  `rtsp://localhost:8554/demo`
 - WebRTC: http://localhost:8889/demo
-- HLS:   http://localhost:8888/demo/index.m3u8
+- HLS:   http://localhost:8888/demo
+
+### Virtual camera (loop a video file)
+
+The hub also has a **`virtualcam`** path that loops a clip from `media/`:
+
+```bash
+utils/virtual_rtsp_camera.sh --make-sample   # or drop your own .mp4 in media/
+VIRTUALCAM_FILE=sample.mp4 docker compose up -d
+ffplay -rtsp_transport tcp rtsp://localhost:8554/virtualcam
+```
+
+See [Virtual camera](docs/virtual-camera.md). To consume from another PC or
+network, see [Remote access](docs/remote-access.md).
 
 ## Documentation
 
-All setup and usage instructions live in [`docs/`](docs/):
-
 - [Getting started](docs/getting-started.md)
-- [Project context](docs/Project%20Context.md)
-- [Implementation plan](docs/implementation-plan.md)
+- [Virtual camera](docs/virtual-camera.md) — hardware-free looping-video source
+- [USB camera](docs/usb-camera.md) — stream a physical USB webcam
+- [Remote access](docs/remote-access.md) — reach streams from another PC / network (Tailscale)
 - [GitHub repository configuration](docs/github/github-branch-protection.md)
 - [GitHub Actions](docs/github/Github_Actions.md)
 
 ## Contributing
-
-Use the same GitHub flow copied from the Rdog repository:
 
 1. Create short-lived feature branches from the protected base branch.
 2. Use commit messages like `[SUBSYSTEM] action: description`.
@@ -55,6 +63,4 @@ Use the same GitHub flow copied from the Rdog repository:
 4. Request review and resolve all conversations before merge.
 5. Use squash or rebase merge only; merge commits stay disabled.
 
-> Status: **Step 1 of the build plan** — MediaMTX streaming engine running with a
-> verifiable demo source. Control plane, cameras, clients, tunnel, and multi-arch
-> packaging follow in subsequent steps.
+See [`AGENTS.md`](AGENTS.md) for the full Git/GitHub conventions.

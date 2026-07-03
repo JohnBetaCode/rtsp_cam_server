@@ -1,21 +1,13 @@
-# Python
-__pycache__/
-*.py[cod]
-.venv/
-venv/
-*.egg-info/
-.pytest_cache/
-
-# uv
-.uv/
-
 # Env / secrets
 .env
-config/cloudflared/*.json
-config/cloudflared/cert.pem
 
-# Runtime state
-config/cameras.yaml
+# Media (virtual camera clips) — keep media/README.md and media/sample.mp4, ignore other video files
+media/*.mp4
+media/*.mkv
+media/*.mov
+media/*.avi
+media/*.webm
+!media/sample.mp4
 
 # Editor / OS
 .DS_Store

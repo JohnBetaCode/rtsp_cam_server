@@ -1,0 +1,33 @@
+# Requirements for utils/virtual_rtsp_camera.sh
+#
+# This is a Bash tool — there are NO Python package dependencies.
+#
+# Required:
+#   docker      Runs the self-contained MediaMTX RTSP server that serves the
+#               looping video. The script auto-pulls the same image the project
+#               already uses: bluenviron/mediamtx:latest-ffmpeg
+#
+# Optional:
+#   ffmpeg      Only needed on the host for `--make-sample` (to generate a test
+#               clip) and for testing playback (ffplay/ffprobe). Streaming itself
+#               runs inside the container, which bundles its own ffmpeg.
+#
+# Install:
+#
+#   Docker:
+#     https://docs.docker.com/engine/install/
+#     Debian/Ubuntu convenience script: curl -fsSL https://get.docker.com | sh
+#     Add your user to the docker group so `docker` runs without sudo:
+#       sudo usermod -aG docker "$USER"   # then log out/in
+#
+#   ffmpeg (optional):
+#     Debian / Ubuntu:   sudo apt-get update && sudo apt-get install -y ffmpeg
+#     Fedora / RHEL:     sudo dnf install -y ffmpeg
+#     Arch:              sudo pacman -S ffmpeg
+#     macOS (Homebrew):  brew install ffmpeg
+#
+# Verify:
+#   docker --version
+#   ffmpeg -version      # optional
+#
+# Tested with Docker + MediaMTX v1.19 and ffmpeg 4.4.x on Ubuntu 22.04.

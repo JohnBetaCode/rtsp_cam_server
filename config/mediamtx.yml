@@ -1,15 +1,15 @@
 ###############################################
 # MediaMTX base configuration
 #
-# Camera paths are added at runtime by the FastAPI control plane via the
-# control API (port 9997). The only static path here is "demo", a synthetic
-# test source used to verify the server end-to-end without real hardware.
+# Static paths are defined below: "demo" (a synthetic test pattern) and
+# "virtualcam" (loops a local video file from ./media). Both let you verify the
+# server end-to-end over RTSP/WebRTC/HLS without real hardware.
 ###############################################
 
 # ----- Global -----
 logLevel: info
 
-# ----- Control API (used by the FastAPI control plane) -----
+# ----- Control API -----
 api: yes
 apiAddress: :9997
 
@@ -38,5 +38,33 @@ paths:
       -f lavfi -i sine=frequency=1000:sample_rate=48000
       -c:v libx264 -preset ultrafast -tune zerolatency -pix_fmt yuv420p
       -c:a aac -f rtsp rtsp://localhost:$RTSP_PORT/$MTX_PATH
+    runOnDemandRestart: yes
+    runOnDemandCloseAfter: 10s
+
+  # Virtual camera: loops a local video file forever, so the whole pipeline can
+  # be exercised without real hardware. The file lives in ./media (mounted at
+  # /media by docker-compose) and is selected with the VIRTUALCAM_FILE env var
+  # (default sample.mp4). Started on demand and re-served over RTSP/WebRTC/HLS,
+  # exactly like a real camera. Generate a test clip with:
+  #   utils/virtual_rtsp_camera.sh --make-sample
+  virtualcam:
+    runOnDemand: >
+      ffmpeg -re -stream_loop -1 -i /media/${VIRTUALCAM_FILE}
+      -c:v libx264 -preset ultrafast -tune zerolatency -pix_fmt yuv420p -g 50
+      -c:a aac -ar 48000 -b:a 128k
+      -f rtsp rtsp://localhost:$RTSP_PORT/$MTX_PATH
+    runOnDemandRestart: yes
+    runOnDemandCloseAfter: 10s
+
+  # USB webcam → RTSP/WebRTC/HLS. Requires a camera at /dev/video0 passed into
+  # the container (uncomment the `devices:` block in docker-compose.yml). Started
+  # on demand and transcoded to H.264 for browser compatibility. If your camera
+  # streams MJPEG, add `-input_format mjpeg` before `-i`; for a different node,
+  # change /dev/video0 here AND in the compose `devices:` mapping.
+  usbcam:
+    runOnDemand: >
+      ffmpeg -f v4l2 -i /dev/video0
+      -c:v libx264 -preset ultrafast -tune zerolatency -pix_fmt yuv420p -g 50
+      -f rtsp rtsp://localhost:$RTSP_PORT/$MTX_PATH
     runOnDemandRestart: yes
     runOnDemandCloseAfter: 10s
