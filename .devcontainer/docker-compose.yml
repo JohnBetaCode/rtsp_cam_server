@@ -1,0 +1,26 @@
+# RTSP Camera Server — Docker Compose
+#
+# Step 1 brings up only the MediaMTX streaming engine. The FastAPI control
+# plane (`app`) and `cloudflared` tunnel are added in later build steps.
+#
+# Copy .env.example -> .env before running:  docker compose up -d
+
+services:
+  mediamtx:
+    # `-ffmpeg` variant bundles ffmpeg (needed for USB/virtual ingest).
+    # Multi-arch image: works on amd64 and arm64 (Jetson / Raspberry Pi).
+    image: bluenviron/mediamtx:latest-ffmpeg
+    container_name: rtsp_mediamtx
+    restart: unless-stopped
+    # host networking simplifies WebRTC ICE and RTSP on Linux hosts/edge devices.
+    network_mode: host
+    volumes:
+      - ./config/mediamtx.yml:/mediamtx.yml:ro
+    # USB / virtual camera passthrough (uncomment devices present on the host):
+    # devices:
+    #   - /dev/video0:/dev/video0
+    environment:
+      - MTX_RTSPADDRESS=:${RTSP_PORT:-8554}
+      - MTX_WEBRTCADDRESS=:${WEBRTC_PORT:-8889}
+      - MTX_HLSADDRESS=:${HLS_PORT:-8888}
+      - MTX_APIADDRESS=:${MEDIAMTX_API_PORT:-9997}
