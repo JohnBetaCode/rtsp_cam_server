@@ -18,8 +18,8 @@ services:
     # USB camera passthrough for the "usbcam" path. Uncomment and adjust to the
     # device on your host. Leave commented if you have no camera — Docker refuses
     # to start when the device node is absent.
-    # devices:
-    #   - /dev/video0:/dev/video0
+    devices:
+      - /dev/video0:/dev/video0
     environment:
       - MTX_RTSPADDRESS=:${RTSP_PORT:-8554}
       - MTX_WEBRTCADDRESS=:${WEBRTC_PORT:-8889}
@@ -27,3 +27,21 @@ services:
       - MTX_APIADDRESS=:${MEDIAMTX_API_PORT:-9997}
       # Which clip in ./media the "virtualcam" path loops (default sample.mp4).
       - VIRTUALCAM_FILE=${VIRTUALCAM_FILE:-sample.mp4}
+
+  # Always-on multi-camera demo: publishes every video in ./media as a looping
+  # stream (media/<filename>), independent of viewers. Reuses the MediaMTX
+  # image purely for its bundled ffmpeg. Restart this service to pick up
+  # newly added clips.
+  media_publisher:
+    image: bluenviron/mediamtx:latest-ffmpeg
+    container_name: rtsp_media_publisher
+    restart: unless-stopped
+    network_mode: host
+    entrypoint: ["/bin/sh", "/publish_media.sh"]
+    volumes:
+      - ./scripts/publish_media.sh:/publish_media.sh:ro
+      - ./media:/media:ro
+    environment:
+      - RTSP_PORT=${RTSP_PORT:-8554}
+    depends_on:
+      - mediamtx

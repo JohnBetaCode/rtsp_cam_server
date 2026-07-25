@@ -56,6 +56,23 @@ paths:
     runOnDemandRestart: yes
     runOnDemandCloseAfter: 10s
 
+  # Multi-camera demo: every file in ./media automatically becomes its own
+  # looping stream — no per-file config needed. The path name is the filename
+  # (with extension), matched by the regex below and captured as $G1:
+  #   media/office.mp4  ->  rtsp://<host>:8554/media/office.mp4
+  #                         http://<host>:8889/media/office.mp4  (WebRTC)
+  #                         http://<host>:8888/media/office.mp4  (HLS)
+  # Each stream starts on demand when the first client connects and stops
+  # shortly after the last one leaves, so idle clips cost no CPU.
+  "~^media/(.+)$":
+    runOnDemand: >
+      ffmpeg -re -stream_loop -1 -i /media/$G1
+      -c:v libx264 -preset ultrafast -tune zerolatency -pix_fmt yuv420p -g 50
+      -c:a aac -ar 48000 -b:a 128k
+      -f rtsp rtsp://localhost:$RTSP_PORT/$MTX_PATH
+    runOnDemandRestart: yes
+    runOnDemandCloseAfter: 10s
+
   # USB webcam → RTSP/WebRTC/HLS. Requires a camera at /dev/video0 passed into
   # the container (uncomment the `devices:` block in docker-compose.yml). Started
   # on demand and transcoded to H.264 for browser compatibility. If your camera

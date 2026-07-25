@@ -5,24 +5,16 @@ project.
 
 ## Project Overview
 
-RTSP Camera Server is an edge camera aggregation hub built on MediaMTX. It serves
-a video source over RTSP, WebRTC, and HLS at once, for browsers and downstream
-AI/ML inspection pipelines.
+RTSP Camera Server is an edge camera aggregation hub. It ingests local USB
+webcams and native RTSP cameras, then republishes streams over RTSP, WebRTC, and
+HLS for browsers and downstream AI/ML inspection pipelines.
 
 The current stack uses:
 
 - MediaMTX for streaming protocols and stream lifecycle.
-- Docker Compose for service orchestration (`mediamtx` plus the
-  `media_publisher` sidecar).
-- Four kinds of sources:
-  - `media/<filename>` — multi-camera: every video in `media/` is published as
-    its own always-on looping stream by the `media_publisher` service
-    (`scripts/publish_media.sh`), with an on-demand regex fallback path in
-    `config/mediamtx.yml`.
-  - `demo` (synthetic pattern), `virtualcam` (loops one local video file; also
-    available standalone via `utils/virtual_rtsp_camera.sh`), and `usbcam` (a
-    physical USB webcam via device passthrough) — static MediaMTX paths in
-    `config/mediamtx.yml`.
+- FastAPI for the future control plane and web UI.
+- Docker Compose for local service orchestration.
+- Optional cloudflared exposure for public access without port forwarding.
 
 ## Common Commands
 
@@ -32,9 +24,6 @@ docker compose up -d
 
 # Stop the service
 docker compose down
-
-# Rescan ./media after adding/removing clips (multi-camera streams)
-docker compose restart media_publisher
 
 # Validate Docker Compose configuration
 docker compose config
@@ -57,7 +46,8 @@ bash scripts/configure_github_repo.sh
 - Good examples:
   - `[DOCS] update GitHub setup guide`
   - `[STREAMING] fix MediaMTX demo path`
-  - `[CONFIG] adjust virtualcam clip settings`
+  - `[CONFIG] add cloudflared defaults`
+  - `[API] add camera registration endpoint`
 - Before committing, review `git status` and `git diff`, check for secrets, and
   run the relevant validation command for the touched area.
 - Use PR labels from the `type_*`, `sys_*`, and `PRIORITY_*` groups.
